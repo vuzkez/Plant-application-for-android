@@ -9,6 +9,7 @@ import androidx.navigation.navArgument
 import com.example.phoneapplication.ui.detail.DetailScreen
 import com.example.phoneapplication.ui.main.MainScreen
 import com.example.phoneapplication.ui.scanner.ScannerScreen
+import com.example.phoneapplication.ui.catalog.CatalogScreen
 
 @Composable
 fun AppNavHost() {
@@ -19,7 +20,8 @@ fun AppNavHost() {
         composable(Routes.MAIN) {
             MainScreen(
                 onPlantClick = { id -> nav.navigate(Routes.detail(id)) },
-                onScanClick = { nav.navigate(Routes.SCANNER) }
+                onScanClick = { nav.navigate(Routes.SCANNER) },
+                onCatalogClick = { nav.navigate(Routes.CATALOG) }
             )
         }
 
@@ -37,6 +39,11 @@ fun AppNavHost() {
                 onBack = { nav.popBackStack() },
                 onPlantAdded = { nav.popBackStack() }
             )
+        }
+
+        // Справочник
+        composable(Routes.CATALOG) {
+            CatalogScreen(onBack = { nav.popBackStack() })
         }
     }
 }

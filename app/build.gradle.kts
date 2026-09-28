@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
+    id("io.github.xilinjia.krdb")
 }
 
 android {
@@ -25,8 +26,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     buildFeatures {
@@ -34,7 +35,12 @@ android {
     }
 }
 
+kotlin {
+    jvmToolchain(17)
+}
+
 dependencies {
+    // --- Compose ---
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
@@ -44,33 +50,41 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
 
-    // Lifecycle (для ViewModel)
+    // --- Lifecycle / ViewModel ---
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
 
     // --- Navigation ---
     implementation(libs.androidx.navigation.compose)
 
-    // Hilt
+    // --- Hilt ---
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
-    // CameraX
+    // --- Room ---
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
+
+    // --- krdb (Realm fork) ---
+    implementation(libs.krdb)
+
+    // --- CameraX ---
     implementation(libs.androidx.camera.camera2)
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.view)
 
-    // ML Kit
+    // --- ML Kit ---
     implementation(libs.mlkit.text.recognition)
 
-    // Accompanist
+    // --- Accompanist ---
     implementation(libs.accompanist.permissions)
 
-    // Coroutines
+    // --- Coroutines ---
     implementation(libs.kotlinx.coroutines.android)
 
-    // Тесты
+    // --- Тесты ---
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)

@@ -8,6 +8,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -22,6 +24,8 @@ class MainViewModel @Inject constructor(
     fun onDateSelected(millis: Long) { _selectedDate.value = millis }
 
     fun waterPlant(plantId: Long) {
-        repository.waterPlant(plantId, _selectedDate.value)
+        viewModelScope.launch {
+            repository.waterPlant(plantId, _selectedDate.value)
+        }
     }
 }

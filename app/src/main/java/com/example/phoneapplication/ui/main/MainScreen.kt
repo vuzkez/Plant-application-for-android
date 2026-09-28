@@ -16,6 +16,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 fun MainScreen(
     onPlantClick: (Long) -> Unit,
     onScanClick: () -> Unit,
+    onCatalogClick: () -> Unit,
     viewModel: MainViewModel = hiltViewModel()
 ) {
     val plants by viewModel.plants.collectAsStateWithLifecycle()
@@ -33,6 +34,11 @@ fun MainScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Календарь полива", fontWeight = FontWeight.Bold) },
+                actions = {
+                    TextButton(onClick = onCatalogClick) {
+                        Text("Справочник")
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
