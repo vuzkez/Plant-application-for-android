@@ -23,7 +23,7 @@ class ScannerViewModel @Inject constructor(
         if (text.isNotBlank()) _recognized.value = text.trim()
     }
 
-    fun savePlant(name: String) {
+    fun saveAndEnrich(name: String) {
         viewModelScope.launch {
             val id = System.currentTimeMillis() % 100000
             repository.addPlant(
@@ -35,6 +35,7 @@ class ScannerViewModel @Inject constructor(
                     intervalDays = 7
                 )
             )
+            repository.enrichWithCareGuideAsync(id, name)
         }
     }
 }

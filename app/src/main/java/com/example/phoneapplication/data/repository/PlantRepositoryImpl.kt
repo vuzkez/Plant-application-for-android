@@ -1,5 +1,6 @@
 package com.example.phoneapplication.data.repository
 
+import com.example.phoneapplication.BuildConfig
 import com.example.phoneapplication.data.local.room.dao.CareEventDao
 import com.example.phoneapplication.data.local.room.dao.PlantDao
 import com.example.phoneapplication.data.local.room.entity.CareEventEntity
@@ -9,12 +10,15 @@ import com.example.phoneapplication.data.model.CareEvent
 import com.example.phoneapplication.data.model.CareType
 import com.example.phoneapplication.data.model.Plant
 import com.example.phoneapplication.data.model.PlantCareInfo
+import com.example.phoneapplication.data.remote.PlantApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -23,10 +27,12 @@ import javax.inject.Singleton
 @Singleton
 class PlantRepositoryImpl @Inject constructor(
     private val plantDao: PlantDao,
-    private val careEventDao: CareEventDao
+    private val careEventDao: CareEventDao,
+    private val plantApi: PlantApi
 ) : PlantRepository {
 
-    private val scope = CoroutineScope(Dispatchers.IO)
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val enrichmentScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     override val plants: StateFlow<List<Plant>> = plantDao.observeAllWithEvents()
         .map { list -> list.map { it.toDomain() } }
@@ -70,8 +76,45 @@ class PlantRepositoryImpl @Inject constructor(
                 careInfo = PlantCareInfo(
                     entity.light, entity.humidity,
                     entity.temperature, entity.description
-                )
+                ),
+                careGuide = entity.careGuide
             )
+        }
+    }
+
+    override fun enrichWithCareGuideAsync(plantId: Long, plantName: String) {
+        enrichmentScope.launch {
+            doEnrichWithCareGuide(plantId, plantName)
+        }
+    }
+
+    private suspend fun doEnrichWithCareGuide(plantId: Long, plantName: String) {
+        try {
+            val response = plantApi.searchSpecies(
+                query = plantName,
+                auth = "Bearer ${BuildConfig.TREFLE_TOKEN}"
+            )
+
+            val firstMatch = response.data?.firstOrNull()
+            if (firstMatch == null) {
+                android.util.Log.w("PlantRepository", "Trefle: ничего не найдено по '$plantName'")
+                return
+            }
+
+            val guide = buildString {
+                appendLine("Научное название: ${firstMatch.scientificName ?: "—"}")
+                firstMatch.commonName?.let { appendLine("Народное название: $it") }
+                firstMatch.family?.let { appendLine("Семейство: $it") }
+                firstMatch.familyCommonName?.let { appendLine("Семейство (рус.): $it") }
+                firstMatch.genus?.let { appendLine("Род: $it") }
+                firstMatch.year?.let { appendLine("Год описания: $it") }
+                firstMatch.author?.let { appendLine("Автор: $it") }
+                firstMatch.imageUrl?.let { appendLine("\nИзображение: $it") }
+            }
+
+            plantDao.updateCareGuide(plantId, guide)
+        } catch (e: Exception) {
+            android.util.Log.e("PlantRepository", "Trefle API error", e)
         }
     }
 
@@ -94,7 +137,6 @@ class PlantRepositoryImpl @Inject constructor(
                 "Полутень", "Высокая", "+16…+22 °C", "Опрыскивать регулярно.")
         )
         plantDao.upsertAll(seed)
-
         careEventDao.insert(
             CareEventEntity(plantId = 1, type = "WATERING",
                 timestamp = now - 12 * day, note = "Обильный полив")
@@ -115,6 +157,7 @@ class PlantRepositoryImpl @Inject constructor(
             plant.light, plant.humidity,
             plant.temperature, plant.description
         ),
+        careGuide = plant.careGuide,
         history = events.map {
             CareEvent(
                 id = it.id,
@@ -135,6 +178,7 @@ class PlantRepositoryImpl @Inject constructor(
         light = careInfo.light,
         humidity = careInfo.humidity,
         temperature = careInfo.temperature,
-        description = careInfo.description
+        description = careInfo.description,
+        careGuide = careGuide
     )
 }

@@ -61,6 +61,23 @@ fun DetailScreen(
                     }
                 }
             }
+
+            if (p.careGuide.isNotBlank()) {
+                item {
+                    Card {
+                        Column(Modifier.padding(16.dp)) {
+                            Text(
+                                "Справка из API Trefle",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Spacer(Modifier.height(8.dp))
+                            Text(p.careGuide, style = MaterialTheme.typography.bodySmall)
+                        }
+                    }
+                }
+            }
+
             item {
                 Text("Журнал ухода", style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold)

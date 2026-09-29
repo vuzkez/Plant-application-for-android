@@ -9,7 +9,7 @@ import com.example.phoneapplication.data.local.room.entity.PlantEntity
 
 @Database(
     entities = [PlantEntity::class, CareEventEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class PlantDatabase : RoomDatabase() {

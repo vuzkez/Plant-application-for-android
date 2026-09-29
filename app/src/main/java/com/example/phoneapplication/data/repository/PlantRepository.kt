@@ -10,5 +10,6 @@ interface PlantRepository {
     suspend fun addPlant(plant: Plant)
     suspend fun addCareEvent(plantId: Long, event: CareEvent)
     fun getPlant(id: Long): Plant?
+    fun enrichWithCareGuideAsync(plantId: Long, plantName: String)
     suspend fun seedIfEmpty()
 }

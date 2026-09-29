@@ -1,10 +1,20 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.serialization)
     id("io.github.xilinjia.krdb")
 }
+
+// Читаем local.properties, чтобы достать TREFLE_TOKEN
+val localProps = Properties().apply {
+    val f = rootProject.file("local.properties")
+    if (f.exists()) f.inputStream().use { load(it) }
+}
+val trefleToken: String = localProps.getProperty("TREFLE_TOKEN") ?: ""
 
 android {
     namespace = "com.example.phoneapplication"
@@ -17,6 +27,8 @@ android {
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "TREFLE_TOKEN", "\"$trefleToken\"")
     }
 
     buildTypes {
@@ -32,6 +44,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -40,7 +53,6 @@ kotlin {
 }
 
 dependencies {
-    // --- Compose ---
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
@@ -50,41 +62,40 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
 
-    // --- Lifecycle / ViewModel ---
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
 
-    // --- Navigation ---
     implementation(libs.androidx.navigation.compose)
 
-    // --- Hilt ---
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
-    // --- Room ---
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
 
-    // --- krdb (Realm fork) ---
     implementation(libs.krdb)
 
-    // --- CameraX ---
     implementation(libs.androidx.camera.camera2)
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.view)
 
-    // --- ML Kit ---
     implementation(libs.mlkit.text.recognition)
 
-    // --- Accompanist ---
     implementation(libs.accompanist.permissions)
 
-    // --- Coroutines ---
     implementation(libs.kotlinx.coroutines.android)
 
-    // --- Тесты ---
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.kotlinx.serialization)
+    implementation(libs.okhttp.logging)
+    implementation(libs.kotlinx.serialization.json)
+
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.androidx.hilt.work)
+    ksp(libs.androidx.hilt.compiler)
+
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)

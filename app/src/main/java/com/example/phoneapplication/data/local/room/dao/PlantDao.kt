@@ -1,6 +1,10 @@
 package com.example.phoneapplication.data.local.room.dao
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Transaction
 import com.example.phoneapplication.data.local.room.entity.PlantEntity
 import com.example.phoneapplication.data.local.room.relation.PlantWithEvents
 import kotlinx.coroutines.flow.Flow
@@ -23,6 +27,9 @@ interface PlantDao {
 
     @Query("UPDATE plants SET lastWateredTime = :time WHERE id = :id")
     suspend fun updateLastWatered(id: Long, time: Long)
+
+    @Query("UPDATE plants SET careGuide = :guide WHERE id = :id")
+    suspend fun updateCareGuide(id: Long, guide: String)
 
     @Query("SELECT COUNT(*) FROM plants")
     suspend fun count(): Int

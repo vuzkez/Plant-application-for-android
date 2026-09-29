@@ -84,7 +84,7 @@ fun ScannerScreen(
                     CameraPreview(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .aspectRatio(4f / 3f)          // ← соотношение 4:3
+                            .aspectRatio(4f / 3f)
                             .clip(RoundedCornerShape(12.dp)),
                         onText = viewModel::onTextRecognized
                     )
@@ -122,7 +122,7 @@ fun ScannerScreen(
                 onClick = {
                     val name = recognized.ifBlank { manualName }
                     if (name.isNotBlank()) {
-                        viewModel.savePlant(name)
+                        viewModel.saveAndEnrich(name)
                         onPlantAdded()
                     }
                 },
@@ -146,7 +146,7 @@ private fun CameraPreview(modifier: Modifier, onText: (String) -> Unit) {
         modifier = modifier,
         factory = { ctx ->
             val previewView = PreviewView(ctx).apply {
-                scaleType = PreviewView.ScaleType.FILL_CENTER  // ← обрезает, а не растягивает
+                scaleType = PreviewView.ScaleType.FILL_CENTER
             }
             val future = ProcessCameraProvider.getInstance(ctx)
             future.addListener({

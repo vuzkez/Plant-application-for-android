@@ -7,5 +7,6 @@ data class Plant(
     val lastWateredTime: Long,
     val intervalDays: Int,
     val careInfo: PlantCareInfo = PlantCareInfo(),
+    val careGuide: String = "",
     val history: List<CareEvent> = emptyList()
 )

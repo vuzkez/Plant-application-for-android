@@ -13,5 +13,6 @@ data class PlantEntity(
     val light: String,
     val humidity: String,
     val temperature: String,
-    val description: String
+    val description: String,
+    val careGuide: String = ""
 )
