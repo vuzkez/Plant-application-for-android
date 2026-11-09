@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.phoneapplication.ui.detail.DetailScreen
+import com.example.phoneapplication.ui.diagnosis.DiagnosisScreen
 import com.example.phoneapplication.ui.main.MainScreen
 import com.example.phoneapplication.ui.scanner.ScannerScreen
 import com.example.phoneapplication.ui.catalog.CatalogScreen
@@ -29,8 +30,20 @@ fun AppNavHost() {
         composable(
             Routes.DETAIL,
             arguments = listOf(navArgument("plantId") { type = NavType.LongType })
+        ) { entry ->
+            val plantId = entry.arguments?.getLong("plantId") ?: 0L
+            DetailScreen(
+                onBack = { nav.popBackStack() },
+                onDiagnosisClick = { nav.navigate(Routes.diagnosis(plantId)) }
+            )
+        }
+
+        // Диагностика растения (LLM)
+        composable(
+            Routes.DIAGNOSIS,
+            arguments = listOf(navArgument("plantId") { type = NavType.LongType })
         ) {
-            DetailScreen(onBack = { nav.popBackStack() })
+            DiagnosisScreen(onBack = { nav.popBackStack() })
         }
 
         // Сканер этикетки

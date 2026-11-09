@@ -19,6 +19,7 @@ import java.util.Locale
 @Composable
 fun DetailScreen(
     onBack: () -> Unit,
+    onDiagnosisClick: () -> Unit,
     viewModel: DetailViewModel = hiltViewModel()
 ) {
     val plant by viewModel.plant.collectAsStateWithLifecycle()
@@ -32,6 +33,9 @@ fun DetailScreen(
                     IconButton(onClick = onBack) {
                         Text("←", style = MaterialTheme.typography.titleLarge)
                     }
+                },
+                actions = {
+                    TextButton(onClick = onDiagnosisClick) { Text("Диагностика") }
                 }
             )
         }

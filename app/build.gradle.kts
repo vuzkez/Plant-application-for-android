@@ -15,6 +15,9 @@ val localProps = Properties().apply {
     if (f.exists()) f.inputStream().use { load(it) }
 }
 val trefleToken: String = localProps.getProperty("TREFLE_TOKEN") ?: ""
+// Ключ и модель для LLM (Gemini). Берутся из local.properties, в git не попадают
+val llmApiKey: String = localProps.getProperty("LLM_API_KEY") ?: ""
+val llmModel: String = localProps.getProperty("LLM_MODEL") ?: "openai/gpt-4o-mini"
 
 android {
     namespace = "com.example.phoneapplication"
@@ -29,6 +32,8 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "TREFLE_TOKEN", "\"$trefleToken\"")
+        buildConfigField("String", "LLM_API_KEY", "\"$llmApiKey\"")
+        buildConfigField("String", "LLM_MODEL", "\"$llmModel\"")
     }
 
     buildTypes {

@@ -11,13 +11,15 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import java.util.concurrent.TimeUnit
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object RetrofitModule {
 
-    private const val BASE_URL = "https://trefle.io/api/v1/"
+    private const val TREFLE_BASE_URL = "https://trefle.io/api/v1/"
+    private const val GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/"
 
     @Provides
     @Singleton
@@ -36,17 +38,35 @@ object RetrofitModule {
         })
         .build()
 
+    // --- Retrofit для Trefle ---
     @Provides
     @Singleton
-    fun provideRetrofit(client: OkHttpClient, json: Json): Retrofit =
+    @Named("trefle")
+    fun provideTrefleRetrofit(client: OkHttpClient, json: Json): Retrofit =
         Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(TREFLE_BASE_URL)
             .client(client)
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
 
     @Provides
     @Singleton
-    fun providePlantApi(retrofit: Retrofit): PlantApi =
+    fun providePlantApi(@Named("trefle") retrofit: Retrofit): PlantApi =
         retrofit.create(PlantApi::class.java)
+
+    // --- Retrofit для Gemini ---
+    @Provides
+    @Singleton
+    @Named("gemini")
+    fun provideGeminiRetrofit(client: OkHttpClient, json: Json): Retrofit =
+        Retrofit.Builder()
+            .baseUrl(GEMINI_BASE_URL)
+            .client(client)
+            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+            .build()
+
+    @Provides
+    @Singleton
+    fun provideGeminiApiService(@Named("gemini") retrofit: Retrofit): GeminiApiService =
+        retrofit.create(GeminiApiService::class.java)
 }
