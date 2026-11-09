@@ -10,6 +10,7 @@ import com.example.phoneapplication.ui.detail.DetailScreen
 import com.example.phoneapplication.ui.diagnosis.DiagnosisScreen
 import com.example.phoneapplication.ui.main.MainScreen
 import com.example.phoneapplication.ui.scanner.ScannerScreen
+import com.example.phoneapplication.ui.voice.VoiceScreen
 import com.example.phoneapplication.ui.catalog.CatalogScreen
 
 @Composable
@@ -22,7 +23,8 @@ fun AppNavHost() {
             MainScreen(
                 onPlantClick = { id -> nav.navigate(Routes.detail(id)) },
                 onScanClick = { nav.navigate(Routes.SCANNER) },
-                onCatalogClick = { nav.navigate(Routes.CATALOG) }
+                onCatalogClick = { nav.navigate(Routes.CATALOG) },
+                onVoiceClick = { nav.navigate(Routes.VOICE) }
             )
         }
 
@@ -52,6 +54,11 @@ fun AppNavHost() {
                 onBack = { nav.popBackStack() },
                 onPlantAdded = { nav.popBackStack() }
             )
+        }
+
+        // Голосовой ввод ухода
+        composable(Routes.VOICE) {
+            VoiceScreen(onBack = { nav.popBackStack() })
         }
 
         // Справочник

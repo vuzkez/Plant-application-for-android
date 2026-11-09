@@ -4,6 +4,7 @@ object Routes {
     const val MAIN = "main"
     const val DETAIL = "detail/{plantId}"
     const val SCANNER = "scanner"
+    const val VOICE = "voice"
     const val DIAGNOSIS = "diagnosis/{plantId}"
 
     const val CATALOG = "catalog"

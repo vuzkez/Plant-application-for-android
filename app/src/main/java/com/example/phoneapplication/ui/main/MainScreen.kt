@@ -17,6 +17,7 @@ fun MainScreen(
     onPlantClick: (Long) -> Unit,
     onScanClick: () -> Unit,
     onCatalogClick: () -> Unit,
+    onVoiceClick: () -> Unit,
     viewModel: MainViewModel = hiltViewModel()
 ) {
     val plants by viewModel.plants.collectAsStateWithLifecycle()
@@ -35,6 +36,9 @@ fun MainScreen(
             TopAppBar(
                 title = { Text("Календарь полива", fontWeight = FontWeight.Bold) },
                 actions = {
+                    TextButton(onClick = onVoiceClick) {
+                        Text("Голос")
+                    }
                     TextButton(onClick = onCatalogClick) {
                         Text("Справочник")
                     }
